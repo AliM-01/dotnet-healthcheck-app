@@ -1,8 +1,20 @@
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+
 var builder = WebApplication.CreateBuilder(args);
 
+var config = builder.Configuration;
+
 builder.Services.AddRazorPages();
+
+string connectionString = config.GetConnectionString("SQLSERVER");
+var apiUri = new Uri($"{config["API_URL"]}/hc");
+
 builder.Services.AddHealthChecks()
-                 .AddSqlServer(builder.Configuration.GetConnectionString("SQLSERVER"));
+                 .AddSqlServer(connectionString)
+                 .AddUrlGroup(apiUri,
+                              name: "My API",
+                              failureStatus: HealthStatus.Degraded,
+                              timeout: TimeSpan.FromSeconds(3));
 
 var app = builder.Build();
 
