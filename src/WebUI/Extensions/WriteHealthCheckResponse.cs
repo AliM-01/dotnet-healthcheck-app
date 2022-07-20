@@ -2,11 +2,11 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace WebUI;
+namespace WebUI.Extensions;
 
 public static class WriteHealthCheckResponse
 {
-    public static Task Write(HttpContext context, HealthReport result)
+    public static Task WriteLive(HttpContext context, HealthReport result)
     {
         context.Response.ContentType = "application/json";
 
@@ -14,6 +14,20 @@ public static class WriteHealthCheckResponse
         {
             Status = result.Status.ToString(),
             TotalDuration = result.TotalDuration.TotalSeconds.ToString("0:0.00")
+        };
+
+        return context.Response.WriteAsJsonAsync(responseData);
+    }
+
+    public static Task WriteDependency(HttpContext context, HealthReport result)
+    {
+        context.Response.ContentType = "application/json";
+
+        var responseData = new WriteResponseData
+        {
+            Status = result.Status.ToString(),
+            TotalDuration = result.TotalDuration.TotalSeconds.ToString("0:0.00"),
+            DependencyHealthChecks = new()
         };
 
         foreach (var item in result.Entries)
@@ -45,7 +59,7 @@ internal record WriteResponseData
     public string TotalDuration { get; set; }
 
     [JsonPropertyName("dependencyHealthChecks")]
-    public List<HealthResult> DependencyHealthChecks { get; set; } = new();
+    public List<HealthResult> DependencyHealthChecks { get; set; }
 }
 
 internal class HealthResult
