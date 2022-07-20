@@ -1,6 +1,7 @@
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
@@ -9,5 +10,9 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.MapRazorPages();
+app.MapHealthChecks("/health");
+    //.RequireAuthorization()
+    //.RequireHost("www.test.com:500")
+    //.RequireCors("CORS_POLICY");
 
 app.Run();
