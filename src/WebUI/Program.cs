@@ -1,7 +1,8 @@
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
-builder.Services.AddHealthChecks();
+builder.Services.AddHealthChecks()
+                 .AddSqlServer(builder.Configuration.GetConnectionString("SQLSERVER"));
 
 var app = builder.Build();
 
