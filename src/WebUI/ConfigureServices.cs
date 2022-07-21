@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using WebUI.Checks;
 using WebUI.Extensions;
 
 namespace WebUI;
@@ -19,7 +20,10 @@ public static class ConfigureServices
                                       name: "My API",
                                       failureStatus: HealthStatus.Degraded,
                                       timeout: TimeSpan.FromSeconds(3),
-                                      tags: new[] { "ready" });
+                                      tags: new[] { "ready" })
+                         .AddCheck<FileWriterCheck>("File Writer Check",
+                                                    failureStatus: HealthStatus.Degraded,
+                                                    tags: new[] { "ready" });
 
         return services;
     }

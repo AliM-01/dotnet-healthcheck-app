@@ -36,7 +36,9 @@ public static class WriteHealthCheckResponse
             {
                 Name = item.Key,
                 Status = item.Value.Status.ToString(),
-                Duration = item.Value.Duration.TotalSeconds.ToString("0:0.00")
+                Duration = item.Value.Duration.TotalSeconds.ToString("0:0.00"),
+                Exception = item.Value.Exception?.Message,
+                Data = (Dictionary<string, object>)item.Value.Data
             });
         }
 
@@ -72,4 +74,10 @@ internal class HealthResult
 
     [JsonPropertyName("duration")]
     public string Duration { get; set; }
+
+    [JsonPropertyName("exception")]
+    public string? Exception { get; set; }
+
+    [JsonPropertyName("data")]
+    public Dictionary<string, object>? Data { get; set; }
 }
