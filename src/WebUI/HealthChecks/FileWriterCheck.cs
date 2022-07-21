@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace WebUI.Checks;
+namespace WebUI.HealthChecks;
 
 public class FileWriterCheck : IHealthCheck
 {

@@ -1,8 +1,6 @@
-using WebUI;
-
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.RegisterServices(builder.Configuration);
+builder.Services.ConfigureServices(builder.Configuration);
 
 var app = builder.Build();
 

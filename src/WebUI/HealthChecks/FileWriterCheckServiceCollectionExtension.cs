@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-using WebUI.Checks;
+using WebUI.HealthChecks;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

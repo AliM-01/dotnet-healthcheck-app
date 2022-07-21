@@ -1,15 +1,14 @@
 ﻿using System.Text.Json.Serialization;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using WebUI.Extensions;
 
-namespace WebUI;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ConfigureServices
+public static class ServiceRegistery
 {
-    public static IServiceCollection RegisterServices(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection ConfigureServices(this IServiceCollection services, IConfiguration config)
     {
         services.AddRazorPages()
                 .AddJsonOptions(opt =>
@@ -42,21 +41,32 @@ public static class ConfigureServices
 
         return services;
     }
+}
 
+public static class MiddlewareRegistery
+{
     public static void UseHealthChecksExtension(this WebApplication app)
     {
+        var statusCodes = new Dictionary<HealthStatus, int>
+        {
+            [HealthStatus.Healthy] = StatusCodes.Status200OK,
+            [HealthStatus.Degraded] = StatusCodes.Status500InternalServerError,
+            [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable
+        };
+
+        // Live Check
         app.MapHealthChecks("/health/live", new HealthCheckOptions
         {
-            ResultStatusCodes = HealthCheckResultStatusCodes.Codes(),
-            ResponseWriter = WriteHealthCheckResponse.WriteLive,
+            ResultStatusCodes = statusCodes,
+            ResponseWriter = CustomResponseWriter.WriteLive,
             Predicate = (check) => !check.Tags.Contains("ready")
         });
 
         // Dependency Check
         app.MapHealthChecks("/health/ready", new HealthCheckOptions
         {
-            ResultStatusCodes = HealthCheckResultStatusCodes.Codes(),
-            ResponseWriter = WriteHealthCheckResponse.WriteDependency,
+            ResultStatusCodes = statusCodes,
+            ResponseWriter = CustomResponseWriter.WriteDependency,
             Predicate = (check) => check.Tags.Contains("ready")
         });
 
@@ -69,7 +79,7 @@ public static class ConfigureServices
         app.UseHealthChecksUI(options =>
         {
             options.UIPath = "/hc-ui";
-            options.ApiPath = "/health-ui-api";
+            options.ApiPath = "/hc-ui-api";
             options.UseRelativeApiPath = false;
         });
     }
