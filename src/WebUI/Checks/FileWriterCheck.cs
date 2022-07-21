@@ -8,9 +8,9 @@ public class FileWriterCheck : IHealthCheck
     private readonly string _filePath;
     private IReadOnlyDictionary<string, object> _healthCheckData;
 
-    public FileWriterCheck(ILogger<FileWriterCheck> logger, IWebHostEnvironment env)
+    public FileWriterCheck(ILoggerFactory loggerFactory, IWebHostEnvironment env)
     {
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<FileWriterCheck>();
         _filePath = $"{env.WebRootPath}\\data\\secret\\";
         _healthCheckData = new Dictionary<string, object>
         {

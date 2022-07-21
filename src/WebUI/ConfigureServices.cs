@@ -27,9 +27,9 @@ public static class ConfigureServices
                                       failureStatus: HealthStatus.Degraded,
                                       timeout: TimeSpan.FromSeconds(3),
                                       tags: new[] { "ready" })
-                         .AddCheck<FileWriterCheck>("File Writer Check",
-                                                    failureStatus: HealthStatus.Degraded,
-                                                    tags: new[] { "ready" });
+                         .AddFileWriter("File Writer Check",
+                                        failureStatus: HealthStatus.Degraded,
+                                        tags: new[] { "ready" });
 
         return services;
     }
