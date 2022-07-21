@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+﻿using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using WebUI.Checks;
 using WebUI.Extensions;
@@ -9,7 +10,12 @@ public static class ConfigureServices
 {
     public static IServiceCollection RegisterServices(this IServiceCollection services, IConfiguration config)
     {
-        services.AddRazorPages();
+        services.AddRazorPages()
+                .AddJsonOptions(opt =>
+                {
+                    opt.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull | JsonIgnoreCondition.WhenWritingDefault;
+                    opt.JsonSerializerOptions.WriteIndented = true;
+                });
 
         string connectionString = config.GetConnectionString("SQLSERVER");
         var apiUri = new Uri($"{config["API_URL"]}/hc");

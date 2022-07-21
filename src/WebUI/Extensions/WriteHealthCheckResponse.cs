@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace WebUI.Extensions;
@@ -38,17 +37,11 @@ public static class WriteHealthCheckResponse
                 Status = item.Value.Status.ToString(),
                 Duration = item.Value.Duration.TotalSeconds.ToString("0:0.00"),
                 Exception = item.Value.Exception?.Message,
-                Data = (Dictionary<string, object>)item.Value.Data
+                Data = item.Value.Data?.Count() > 0 ? (Dictionary<string, object>)item.Value.Data : null
             });
         }
 
-        string res = JsonSerializer.Serialize(responseData,
-                                              options: new JsonSerializerOptions
-                                              {
-                                                  WriteIndented = true
-                                              });
-
-        return context.Response.WriteAsync(res);
+        return context.Response.WriteAsJsonAsync(responseData);
     }
 }
 
@@ -76,8 +69,10 @@ internal class HealthResult
     public string Duration { get; set; }
 
     [JsonPropertyName("exception")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull)]
     public string? Exception { get; set; }
 
     [JsonPropertyName("data")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull)]
     public Dictionary<string, object>? Data { get; set; }
 }
