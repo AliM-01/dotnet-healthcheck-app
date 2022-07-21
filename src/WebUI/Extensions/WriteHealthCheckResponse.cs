@@ -12,7 +12,7 @@ public static class WriteHealthCheckResponse
         var responseData = new WriteResponseData
         {
             Status = result.Status.ToString(),
-            TotalDuration = result.TotalDuration.TotalSeconds.ToString("0:0.00")
+            TotalDuration = result.TotalDuration.TotalSeconds.ToString("00:00:00")
         };
 
         return context.Response.WriteAsJsonAsync(responseData);
@@ -25,7 +25,7 @@ public static class WriteHealthCheckResponse
         var responseData = new WriteResponseData
         {
             Status = result.Status.ToString(),
-            TotalDuration = result.TotalDuration.TotalSeconds.ToString("0:0.00"),
+            TotalDuration = result.TotalDuration.TotalSeconds.ToString("00:00:00"),
             DependencyHealthChecks = new()
         };
 
@@ -35,9 +35,9 @@ public static class WriteHealthCheckResponse
             {
                 Name = item.Key,
                 Status = item.Value.Status.ToString(),
-                Duration = item.Value.Duration.TotalSeconds.ToString("0:0.00"),
+                Duration = item.Value.Duration.TotalSeconds.ToString("00:00:00"),
                 Exception = item.Value.Exception?.Message,
-                Data = item.Value.Data?.Count() > 0 ? (Dictionary<string, object>)item.Value.Data : null
+                Data = item.Value.Data?.Count > 0 ? (Dictionary<string, object>)item.Value.Data : null
             });
         }
 

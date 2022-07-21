@@ -1,7 +1,8 @@
 ﻿using System.Text.Json.Serialization;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using WebUI.Checks;
 using WebUI.Extensions;
 
 namespace WebUI;
@@ -31,6 +32,14 @@ public static class ConfigureServices
                                         failureStatus: HealthStatus.Degraded,
                                         tags: new[] { "ready" });
 
+
+        services.AddHealthChecksUI(settings =>
+        {
+            settings.AddHealthCheckEndpoint("WebUI App Live", "/health/live");
+            settings.AddHealthCheckEndpoint("WebUI App Dependency", "/health/ready");
+        })
+        .AddInMemoryStorage();
+
         return services;
     }
 
@@ -49,6 +58,19 @@ public static class ConfigureServices
             ResultStatusCodes = HealthCheckResultStatusCodes.Codes(),
             ResponseWriter = WriteHealthCheckResponse.WriteDependency,
             Predicate = (check) => check.Tags.Contains("ready")
+        });
+
+        app.MapHealthChecks("/hc-ui", new HealthCheckOptions
+        {
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+            Predicate = _ => true
+        });
+
+        app.UseHealthChecksUI(options =>
+        {
+            options.UIPath = "/hc-ui";
+            options.ApiPath = "/health-ui-api";
+            options.UseRelativeApiPath = false;
         });
     }
 }
